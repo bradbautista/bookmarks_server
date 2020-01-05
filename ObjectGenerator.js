@@ -1,4 +1,5 @@
 const fs = require('fs');
+const uuid = require('uuid/v4');
 
 const adjectives = [
     'aback',
@@ -14904,6 +14905,23 @@ function diceRoll(max) {
     return Math.floor(Math.random() * Math.floor(max))
 }
 
+let bookmarkArray = Array.from({length:25}, 
+    () => (
+
+    {
+        "title": ((diceRoll(10) >=5) 
+            ? (nouns[diceRoll(4500)] + ' ' + [diceRoll(275)])
+            : (interjections[diceRoll(200)] + ' ' + nouns[diceRoll(4500)])),        
+        "url": ((diceRoll(10) >=5) 
+            ? (nouns[diceRoll(4500)] + ' ' + [diceRoll(275)])
+            : (interjections[diceRoll(200)] + ' ' + nouns[diceRoll(4500)])),        
+        "description": (adjectives[diceRoll(1097)] + ' ' + nouns[diceRoll(4500)] + ' ' + adverbs[diceRoll(324)] + ' ' + ergative_verbs[diceRoll(275)] + 's' + ' ' + nouns[diceRoll(4500)]),
+        "rating": diceRoll(5),
+        "id": uuid()
+    }
+
+    ));
+
 let contentArray = Array.from({length:50},
      () => (
 
@@ -14955,9 +14973,12 @@ let navArray = [
     }
 ];
 
+
+
 const reSTORE = {}
-        reSTORE.foos = navArray
-        reSTORE.bars = contentArray
+        // reSTORE.foos = navArray
+        // reSTORE.bars = contentArray
+        reSTORE.bookmarks = bookmarkArray
 
 function writeFile() {
     fs.writeFile("reSTORE.json", JSON.stringify(reSTORE), function(err) {

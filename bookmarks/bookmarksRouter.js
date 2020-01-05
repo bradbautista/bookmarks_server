@@ -1,26 +1,26 @@
 const express = require('express');
-const barRouter = express.Router();
+const bookmarksRouter = express.Router();
 const bodyParser = express.json();
 const uuid = require('uuid/v4');
 const logger = require('../logger');
-const { foos, bars } = require('../reSTORE')
+const { bookmarks } = require('../reSTORE')
 
 //////////////////////////////////
 //////////////////////////////////
-///////// ROUTE /bar/ ///////////
+////// ROUTE /bookmarks/ /////////
 //////////////////////////////////
 //////////////////////////////////
 
-barRouter
-  .route('/bar')
+bookmarksRouter
+  .route('/bookmarks')
 
   //////////////////////////////////
-  ////////// GET /bar /////////////
+  ////////// GET /bookmarks ////////
   //////////////////////////////////  
 
   .get((req, res) => { 
 
-    let response = bars;
+    let response = bookmarks;
 
     // Filter our items by the query parameter if it is present
     if (req.query.param) {
@@ -47,125 +47,131 @@ barRouter
     }
 
     response = response
-    // Filter the bar for movies with a rating greater than or
+    // Filter the bookmarks for movies with a rating greater than or
     // equal to the value provided by the user
     .filter(movie => 
         movie.rating >= numberizedQueryString
     )
     // And then sort them using a comparison function
     .sort((a, b) => (a.rating > b.rating) ? 1 : (a.rating === b.rating) ? ((a.rating > b.rating) ? 1 : -1) : -1 )
-    // And then put the bar in descending order
+    // And then put the bookmarks in descending order
     .reverse()
     }
 
-    res.json(bars)
+    res.json(bookmarks)
   
   })
 
   //////////////////////////////////
-  ////////// POST /bar ////////////
+  /////// POST /bookmarks //////////
   //////////////////////////////////
 
   .post(bodyParser, (req, res) => {
-    const { header, fooIds = [] } = req.body;
+    const { title, url, description, rating } = req.body;
 
-    if (!header) {
-        logger.error(`Header is required`);
-        return res
+    if (!title) {
+      logger.error(`Title is required`);
+      return res
+        .status(400)
+        .send('Invalid data');
+    }
+    
+    if (!url) {
+      logger.error(`Url is required`);
+      return res
         .status(400)
         .send('Invalid data');
     }
 
-    // check foo IDs
-    if (fooIds.length > 0) {
-        let valid = true;
-        fooIds.forEach(cid => {
-        const foo = foos.find(c => c.id == cid);
-        if (!foo) {
-            logger.error(`foo with id ${cid} not found in foos array.`);
-            valid = false;
-        }
-        });
-
-        if (!valid) {
+    if (!description) {
+        logger.error(`Description is required`);
         return res
-            .status(400)
-            .send('Invalid data');
-        }
+          .status(400)
+          .send('Invalid data');
+    }
+
+    if (!rating) {
+        logger.error(`Rating is required`);
+        return res
+          .status(400)
+          .send('Invalid data');
     }
 
     // get an id
     const id = uuid();
 
-    const bar = {
-        id,
-        header,
-        fooIds
+    const bookmark = {
+      id,
+      title,
+      url,
+      description,
+      rating
     };
+  
+    bookmarks.push(bookmark);
 
-    bars.push(bar);
-
-    logger.info(`bar with id ${id} created`);
+    logger.info(`Bookmark with id ${id} created`);
 
     res
-        .status(201)
-        .location(`http://localhost:8000/bar/${id}`)
-        .json({id});
+    .status(201)
+    .location(`http://localhost:8000/bookmarks/${id}`)
+    .json({bookmark});
   })
 
 //////////////////////////////////
 //////////////////////////////////
-//////// ROUTE /bar/:id /////////
+////// ROUTE /bookmarks/:id //////
 //////////////////////////////////
 //////////////////////////////////
 
-barRouter
-  .route('/bar/:id')
+bookmarksRouter
+  .route('/bookmarks/:id')
 
   //////////////////////////////////
-  ///////// GET /bar/:id //////////
+  /////// GET /bookmarks/:id ///////
   //////////////////////////////////
 
   .get((req, res) => {
 
     const { id } = req.params;
-    const bar = bars.find(li => li.id == id);
+    console.log(id);
+    const bookmark = bookmarks.find(bookmark => bookmark.id == id);
 
-    // make sure we found a bar
-    if (!bar) {
-        logger.error(`bar with id ${id} not found.`);
+    // make sure we found a bookmarks
+    if (!bookmark) {
+        logger.error(`bookmarks with id ${id} not found.`);
         return res
-        .status(404666666666666666666666)
-        .send('bar not found');
+        .status(404)
+        .send('bookmarks not found');
     }
 
-    res.json(bar);
+    res.json(bookmark);
 
   })
 
 
   //////////////////////////////////
-  //////// DELETE /bar/:id ////////
+  ////// DELETE /bookmarks/:id /////
   //////////////////////////////////
 
   .delete((req, res) => {
 
     const { id } = req.params;
-    const barIndex = bars.findIndex(li => li.id == id);
+    const bookmarksIndex = bookmarks.findIndex(li => li.id == id);
 
-    if (barIndex === -1) {
-        logger.error(`bar with id ${id} not found.`);
+    if (bookmarksIndex === -1) {
+        logger.error(`bookmarks with id ${id} not found.`);
         return res
         .status(404)
         .send('Not Found');
     }
 
-    bars.splice(barIndex, 1);
+    bookmarks.splice(bookmarksIndex, 1);
 
-    logger.info(`bar with id ${id} deleted.`);
+    logger.info(`bookmarks with id ${id} deleted.`);
     res
         .status(204)
         .end();
   })
 
-module.exports = barRouter;
+module.exports = bookmarksRouter;

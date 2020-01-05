@@ -4,8 +4,7 @@ const morgan = require('morgan');
 const cors = require('cors')
 const helmet = require('helmet')
 const app = express();
-const fooRouter = require('./foo/fooRouter');
-const barRouter = require('./bar/barRouter');
+const bookmarksRouter = require('./bookmarks/bookmarksRouter');
 
 // Only turn this on if you want to generate new data,
 // and then turn it off, since nodemon will loop infinitely
@@ -35,8 +34,7 @@ app.use(function validateBearerToken(req, res, next) {
 
 })
 
-app.use(fooRouter);
-app.use(barRouter);
+app.use(bookmarksRouter);
 
 console.log(process.env.API_TOKEN)
 
