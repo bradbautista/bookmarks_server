@@ -5,10 +5,6 @@ const cors = require('cors')
 const helmet = require('helmet')
 const app = express();
 const bookmarksRouter = require('./bookmarks/bookmarksRouter');
-
-// Only turn this on if you want to generate new data,
-// and then turn it off, since nodemon will loop infinitely
-// generateNewData = require('./ObjectGenerator')
 reSTORE = require('./reSTORE.json')
 
 // set up morgan
@@ -77,7 +73,7 @@ app.use((error, req, res, next) => {
 //// LISTEN ON SPECIFIED PORT ////
 //////////////////////////////////
 
-const PORT = process.env.PORT || 17043;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
     // console.log(reSTORE)

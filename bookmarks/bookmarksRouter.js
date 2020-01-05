@@ -20,44 +20,6 @@ bookmarksRouter
 
   .get((req, res) => { 
 
-    let response = bookmarks;
-
-    // Filter our items by the query parameter if it is present
-    if (req.query.param) {
-        response = response.filter(item =>
-        // Lowercase then compare to make search case-insensitive
-        item.param.toLowerCase().includes(req.query.param.toLowerCase())
-        )
-    }
-
-    // A filter with a numerical sort
-    if (req.query.rating) {
-
-    // Coerce query string to number to validate param
-    let numberizedQueryString = parseFloat(req.query.rating)
-    
-    // If the value the user provided is not a number, is less than 0
-    // or is bigger than 10, reject it. Also NaN is a number, so convert
-    // numberizedQueryString back to a string and see if it evaluates to
-    // 'NaN', since comparing to NaN doesn't seem to work
-    if (typeof(numberizedQueryString) !== 'number' || numberizedQueryString.toString() === 'NaN' || numberizedQueryString < 0 || numberizedQueryString > 10) {
-    return res
-        .status(400)
-        .send('Rating must be a number from 1 to 10, optionally with a single decimal value, i.e. 6.8.');
-    }
-
-    response = response
-    // Filter the bookmarks for movies with a rating greater than or
-    // equal to the value provided by the user
-    .filter(movie => 
-        movie.rating >= numberizedQueryString
-    )
-    // And then sort them using a comparison function
-    .sort((a, b) => (a.rating > b.rating) ? 1 : (a.rating === b.rating) ? ((a.rating > b.rating) ? 1 : -1) : -1 )
-    // And then put the bookmarks in descending order
-    .reverse()
-    }
-
     res.json(bookmarks)
   
   })
